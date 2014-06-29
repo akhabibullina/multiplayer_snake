@@ -1,0 +1,9 @@
+{
+  "name": "msnake",
+  "description": "Multiplayer Snake",
+  "author": "Jake and Tony",
+  "dependencies": {
+    "socket.io": "1.0.6"
+  },
+  "engine": "node 0.10.29"
+}

@@ -1,0 +1,105 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+	var socket = io('http://localhost'),
+
+  		events = (function () {
+  			
+  			var list = [];
+
+			  function on (name, callback) {
+			  
+			    if (!list[name]) {
+			    
+			      this instanceof Node ? this.addEventListener(name, fire) : window.addEventListener(name, fire);
+
+			      list.push(name);
+			      list[name] = [];
+			      list[name].push([this, callback]);
+			    
+			    } else { 
+
+			    	list[name].push([this, callback]); 
+
+			    }
+
+			    return this;
+
+			  }
+
+			  function off (name, callback, opt) {
+
+			    var event = list[name]
+
+			    if (opt) { 
+			      this instanceof Node ? 
+			        this.removeEventListener(name, fire) : 
+			        window.removeEventListener(name, fire); 
+			    }
+
+			    if (event.length) {
+
+			      for (var i = 0; i < event.length; i += 1) {
+			        if (event[i][0] === this && event[i][1] === callback) {
+			          event.splice(i, 1);
+			          i -= 1;
+			        } 
+			      }
+			    
+			    }
+
+			    return this;
+
+			  }
+
+		  
+			  function fire (event) {
+			      
+			    var type      = typeof event === "string" ? event : event.type,        
+			        data      = typeof event === "string" ? arguments[1] : event,        
+			        listeners = list[type],
+			        listener  = undefined;
+
+			    if (listeners.length) {
+			      for (var i = 0; i < listeners.length; i += 1) {
+			        listener = listeners[i];
+			        listener[1].call(listener[0], data);
+			      }
+			    }
+
+			    return this;       
+			  
+			  };
+
+		  return {
+		    'on'  : on,
+		    'off' : off,
+		    'fire': fire
+		  }
+
+		}());
+
+	if (Object.prototype.on === undefined) {
+	  Object.prototype.on = events.on;
+	}
+
+	if (Object.prototype.off === undefined) {
+	  Object.prototype.off = events.off;
+	}
+
+	if (Object.prototype.fire === undefined) {
+	  Object.prototype.fire = events.fire;
+	}
+
+	window.on('keydown', function(event) {
+		
+		console.log('Key sent: ' + event.which);
+		socket.emit('keydown', event.which);
+	
+	});
+
+	socket.on('update', function (key) {
+		console.log('Key received: ' + key);
+	});
+
+</script>
