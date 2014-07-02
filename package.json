@@ -1,7 +1,7 @@
 {
   "name": "msnake",
   "description": "Multiplayer Snake",
-  "author": "Jake and Tony",
+  "author": "Jake and Tony and Anna",
   "dependencies": {
     "socket.io": "1.0.6"
   },
